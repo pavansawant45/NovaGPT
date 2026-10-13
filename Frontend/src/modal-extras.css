@@ -1,0 +1,827 @@
+/* ============================================
+   Settings Modal
+   ============================================ */
+
+.settingsModal {
+    max-width: 480px;
+    padding: 0;
+}
+
+.modalTitleGroup {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.modalIcon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.settingsIcon {
+    background: var(--accent-gradient);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.settingsBody {
+    padding: 12px 0 16px;
+}
+
+.settingSection {
+    padding: 4px 0;
+}
+
+.settingSectionLabel {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 10px 24px 6px;
+}
+
+.settingRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    gap: 20px;
+    transition: background 0.15s;
+}
+
+.settingRow:hover {
+    background: var(--bg-hover);
+}
+
+.settingInfo {
+    flex: 1;
+}
+
+.settingTitle {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 2px;
+}
+
+.settingDesc {
+    font-size: 0.78rem;
+    color: var(--text-sub);
+    line-height: 1.4;
+}
+
+/* Custom toggle switch */
+.toggleSwitch {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.toggleSwitch input {
+    display: none;
+}
+
+.toggleTrack {
+    display: block;
+    width: 44px;
+    height: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    position: relative;
+    transition: background 0.25s, border-color 0.25s;
+}
+
+.toggleSwitch input:checked + .toggleTrack {
+    background: var(--accent-gradient);
+    border-color: transparent;
+}
+
+.toggleThumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.toggleSwitch input:checked + .toggleTrack .toggleThumb {
+    transform: translateX(20px);
+}
+
+/* Active badge */
+.activeBadge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #34d399;
+    background: rgba(52, 211, 153, 0.1);
+    border: 1px solid rgba(52, 211, 153, 0.25);
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.activeDot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #34d399;
+    flex-shrink: 0;
+    animation: blink 2s ease-in-out infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.3; }
+}
+
+/* Theme toggle */
+.themeToggleBtn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 7px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-main);
+    transition: background 0.15s, border-color 0.2s;
+    white-space: nowrap;
+    font-family: 'Inter', sans-serif;
+}
+
+.themeToggleBtn:hover {
+    border-color: var(--border-hover);
+    background: var(--bg-hover);
+}
+
+.themeToggleBtn i {
+    font-size: 13px;
+    color: var(--accent-color);
+}
+
+
+/* ============================================
+   Upgrade Modal
+   ============================================ */
+
+.upgradeModal {
+    max-width: 580px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.upgradeHeader {
+    position: relative;
+    background: var(--accent-gradient);
+    padding: 32px 24px 28px;
+    text-align: center;
+    overflow: hidden;
+}
+
+.upgradeHeader::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 0%, rgba(255,255,255,0.12) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.upgradeCloseBtn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    z-index: 1;
+}
+
+.upgradeCloseBtn:hover {
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+}
+
+.upgradeHeroIcon {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: #fff;
+    margin: 0 auto 14px;
+    backdrop-filter: blur(4px);
+}
+
+.upgradeTitle {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0 0 6px;
+    letter-spacing: -0.3px;
+}
+
+.upgradeSubtitle {
+    font-size: 0.875rem;
+    color: rgba(255,255,255,0.75);
+    margin: 0;
+}
+
+.upgradePlans {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 20px;
+}
+
+.planCard {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    transition: border-color 0.2s;
+}
+
+.planCard:hover {
+    border-color: var(--border-hover);
+}
+
+.planCardPro {
+    border: 2px solid var(--accent-color);
+    background: linear-gradient(160deg, var(--bg-card) 60%, rgba(124,110,245,0.07));
+}
+
+.planPopularBadge {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent-gradient);
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    letter-spacing: 0.2px;
+}
+
+.planCardHeader {
+    margin-top: 4px;
+}
+
+.planName {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-sub);
+    margin-bottom: 4px;
+}
+
+.planNamePro {
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.planPrice {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1;
+}
+
+.planPricePro {
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.planPeriod {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--text-sub);
+    -webkit-text-fill-color: var(--text-sub);
+}
+
+.planFeatures {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    flex: 1;
+}
+
+.planFeatures li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--text-sub);
+    line-height: 1.4;
+}
+
+.planCheck {
+    color: #34d399;
+    font-size: 11px;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.planCheckPro {
+    color: var(--accent-color);
+    font-size: 11px;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.planCurrentBadge {
+    text-align: center;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.upgradeNowBtn {
+    width: 100%;
+    padding: 11px;
+    background: var(--accent-gradient);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    box-shadow: 0 4px 16px var(--accent-glow);
+    margin-top: auto;
+}
+
+.upgradeNowBtn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px var(--accent-glow);
+}
+
+.upgradeDisclaimer {
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    padding: 0 20px 18px;
+}
+
+
+/* ============================================
+   Auth Modal — Premium Two-Panel Design
+   ============================================ */
+
+.authOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    animation: fadeIn 0.18s ease;
+    padding: 16px;
+}
+
+.authCard {
+    display: flex;
+    width: 100%;
+    max-width: 780px;
+    min-height: 520px;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255,255,255,0.06);
+    animation: modalSlideUp 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Left Panel ── */
+.authLeft {
+    flex: 0 0 42%;
+    background: var(--accent-gradient);
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: 36px 32px;
+    overflow: hidden;
+}
+
+.authLeft::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 20% 20%, rgba(255,255,255,0.15) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 80%, rgba(0,0,0,0.2) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.authLeftGlow {
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    top: -80px;
+    right: -80px;
+    pointer-events: none;
+}
+
+.authLeftContent {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    width: 100%;
+}
+
+.authBrand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.authBrandIcon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #fff;
+    backdrop-filter: blur(4px);
+}
+
+.authBrandName {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.3px;
+}
+
+.authLeftTitle {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    margin: 0;
+}
+
+.authLeftGradient {
+    color: rgba(255,255,255,0.7);
+}
+
+.authLeftSub {
+    font-size: 0.875rem;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.authFeatureList {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+}
+
+.authFeatureList li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.875rem;
+    color: rgba(255,255,255,0.85);
+    font-weight: 500;
+}
+
+.authFeatureList li i {
+    color: rgba(255,255,255,0.9);
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+/* ── Right Panel ── */
+.authRight {
+    flex: 1;
+    background: var(--bg-surface);
+    padding: 36px 36px 32px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-y: auto;
+}
+
+.authCloseBtn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-sub);
+    transition: background 0.15s, color 0.15s;
+}
+
+.authCloseBtn:hover {
+    background: var(--bg-hover);
+    color: var(--text-main);
+}
+
+/* Tabs */
+.authTabs {
+    display: flex;
+    gap: 4px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 24px;
+    width: fit-content;
+}
+
+.authTab {
+    padding: 7px 20px;
+    border-radius: 9px;
+    border: none;
+    background: transparent;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-sub);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    font-family: 'Inter', sans-serif;
+}
+
+.authTab.active {
+    background: var(--accent-gradient);
+    color: #fff;
+    box-shadow: 0 2px 10px var(--accent-glow);
+}
+
+.authTab:not(.active):hover {
+    color: var(--text-main);
+    background: var(--bg-hover);
+}
+
+.authFormTitle {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 0 0 4px;
+    letter-spacing: -0.3px;
+}
+
+.authFormSub {
+    font-size: 0.85rem;
+    color: var(--text-sub);
+    margin: 0 0 20px;
+}
+
+/* Error */
+.authError {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(248, 113, 113, 0.08);
+    border: 1px solid rgba(248, 113, 113, 0.25);
+    color: #f87171;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 16px;
+}
+
+.authError i {
+    color: #f87171;
+    flex-shrink: 0;
+}
+
+/* Form */
+.authForm {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+}
+
+.authField {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.authLabel {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-sub);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.authInputWrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.authInputIcon {
+    position: absolute;
+    left: 14px;
+    font-size: 13px;
+    color: var(--text-muted);
+    pointer-events: none;
+    transition: color 0.2s;
+}
+
+.authInputWrap:focus-within .authInputIcon {
+    color: var(--accent-color);
+}
+
+.authInput {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 11px 14px 11px 38px;
+    font-size: 0.9rem;
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+
+.authInput::placeholder {
+    color: var(--text-muted);
+}
+
+.authInput:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.authEyeBtn {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+}
+
+.authEyeBtn:hover {
+    color: var(--text-sub);
+}
+
+.authEyeBtn i {
+    color: inherit;
+}
+
+/* Submit Button */
+.authSubmitBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 13px;
+    background: var(--accent-gradient);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px var(--accent-glow);
+    margin-top: 4px;
+}
+
+.authSubmitBtn i {
+    color: #fff;
+    font-size: 15px;
+}
+
+.authSubmitBtn:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 28px var(--accent-glow);
+}
+
+.authSubmitBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Spinner inside button */
+.authSpinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Switch text */
+.authSwitchText {
+    margin-top: 18px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-sub);
+}
+
+.authSwitchLink {
+    color: var(--accent-color);
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+
+.authSwitchLink:hover {
+    opacity: 0.8;
+}
+
+/* Responsive: collapse left panel on small screens */
+@media (max-width: 600px) {
+    .authLeft {
+        display: none;
+    }
+    .authCard {
+        max-width: 420px;
+    }
+    .authRight {
+        padding: 28px 24px;
+    }
+}

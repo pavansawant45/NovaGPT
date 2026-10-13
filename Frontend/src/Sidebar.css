@@ -1,0 +1,295 @@
+/* ============================================
+   Sidebar
+   ============================================ */
+
+.sidebar {
+    background-color: var(--bg-sidebar);
+    color: var(--text-sub);
+    height: 100vh;
+    width: 280px;
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+/* ── Header ── */
+
+.sidebarHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 14px 10px;
+    flex-shrink: 0;
+}
+
+.sidebarBrand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebarLogo {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: var(--accent-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: #fff;
+    box-shadow: 0 0 12px var(--accent-glow);
+    flex-shrink: 0;
+}
+
+.sidebarBrandName {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.newChatBtn {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--text-sub);
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.newChatBtn:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-hover);
+    color: var(--text-main);
+}
+
+/* ── History label ── */
+
+.historyLabel {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 8px 16px 6px;
+    flex-shrink: 0;
+}
+
+/* ── History list ── */
+
+.history {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 8px;
+    list-style: none;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+}
+
+.history li {
+    cursor: pointer;
+    padding: 9px 10px;
+    margin-bottom: 2px;
+    font-size: 0.85rem;
+    border-radius: 10px;
+    position: relative;
+    color: var(--text-sub);
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.history li:hover {
+    background-color: var(--bg-hover);
+    color: var(--text-main);
+}
+
+.threadIcon {
+    font-size: 12px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.threadTitle {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.trashIcon {
+    opacity: 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    transition: opacity 0.2s, color 0.2s;
+    flex-shrink: 0;
+}
+
+.history li:hover .trashIcon {
+    opacity: 1;
+}
+
+.trashIcon:hover {
+    color: #f87171 !important;
+}
+
+.highlighted {
+    background-color: var(--bg-hover);
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+/* ── Footer ── */
+
+.sidebarFooter {
+    flex-shrink: 0;
+    padding: 10px 10px 8px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Logged-in user card */
+.userCard {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    margin-bottom: 6px;
+    transition: border-color 0.2s;
+}
+
+.userCard:hover {
+    border-color: var(--border-hover);
+}
+
+.userCardAvatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--accent-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.userCardInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.userCardName {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.userCardPlan {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.72rem;
+    color: var(--text-sub);
+    margin-top: 2px;
+}
+
+.planDot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #34d399;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.userCardBadge {
+    font-size: 14px;
+    color: #34d399;
+    flex-shrink: 0;
+}
+
+/* Guest card */
+.guestCard {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    margin-bottom: 6px;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.guestCard:hover {
+    border-color: var(--border-hover);
+    background: var(--bg-hover);
+}
+
+.guestIcon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--text-sub);
+    flex-shrink: 0;
+}
+
+.guestInfo {
+    flex: 1;
+}
+
+.guestTitle {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.guestSub {
+    font-size: 0.72rem;
+    color: var(--text-sub);
+    margin-top: 2px;
+}
+
+.guestArrow {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.sidebarCredit {
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    padding-top: 4px;
+}
