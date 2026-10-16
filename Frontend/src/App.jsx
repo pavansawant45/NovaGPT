@@ -7,12 +7,12 @@ import SettingsModal from "./SettingsModal";
 import UpgradeModal from "./UpgradeModal";
 import { MyContext } from "./MyContext";
 import { useState, useEffect } from 'react';
-import { v1 as uuidv1 } from "uuid";
+import { v4 as uuidv4 } from "uuid"; // v4 = random UUID, matching crypto.randomUUID output format
 
 function App() {
   const [prompt, setPrompt] = useState("");
   const [reply, setReply] = useState(null);
-  const [currThreadId, setCurrThreadId] = useState(uuidv1());
+  const [currThreadId, setCurrThreadId] = useState(() => uuidv4());
   const [prevChats, setPrevChats] = useState([]);
   const [newChat, setNewChat] = useState(true);
   const [allThreads, setAllThreads] = useState([]);
@@ -25,6 +25,16 @@ function App() {
   });
   const [token, setToken] = useState(() => localStorage.getItem("novagpt_token") || null);
   const [autoSpeak, setAutoSpeak] = useState(false);
+
+  // Guest session identifier — generated once per browser, persisted in localStorage.
+  // crypto.randomUUID is available in all modern browsers and produces a v4 UUID.
+  const [guestId] = useState(() => {
+    const existing = localStorage.getItem("novagpt_guest_id");
+    if (existing) return existing;
+    const id = crypto.randomUUID();
+    localStorage.setItem("novagpt_guest_id", id);
+    return id;
+  });
 
   // Modals
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -52,7 +62,7 @@ function App() {
     setUser(null);
     localStorage.removeItem("novagpt_token");
     localStorage.removeItem("novagpt_user");
-    setCurrThreadId(uuidv1());
+    setCurrThreadId(uuidv4());
     setPrevChats([]);
     setNewChat(true);
   };
@@ -67,6 +77,7 @@ function App() {
     theme, toggleTheme,
     user, token, login, logout,
     autoSpeak, setAutoSpeak,
+    guestId,               // available to all consumers for X-Guest-Id header
     setAuthModalOpen,
     setSettingsModalOpen,
     setUpgradeModalOpen

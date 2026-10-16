@@ -1,29 +1,33 @@
 import "./Sidebar.css";
 import { useContext, useEffect } from "react";
 import { MyContext } from "./MyContext";
-import { v1 as uuidv1} from "uuid";
+import { v4 as uuidv4 } from "uuid";
+import apiFetch from "./api.js";
 
 function Sidebar() {
-    const { allThreads, setAllThreads, currThreadId, setNewChat, setPrompt, setReply, setCurrThreadId, setPrevChats, token, user, setAuthModalOpen } = useContext(MyContext);
-
-    const getHeaders = () => {
-        const headers = { "Content-Type": "application/json" };
-        if (token) {
-            headers["Authorization"] = `Bearer ${token}`;
-        }
-        return headers;
-    };
+    const {
+        allThreads, setAllThreads, currThreadId, setNewChat, setPrompt,
+        setReply, setCurrThreadId, setPrevChats, token, guestId, user,
+        logout, setAuthModalOpen
+    } = useContext(MyContext);
 
     const getAllThreads = async () => {
         try {
-            const response = await fetch("http://localhost:5000/api/thread", { headers: getHeaders() });
+            const response = await apiFetch(
+                "/api/thread",
+                {},
+                { token, guestId, onUnauthorized: logout }
+            );
             const res = await response.json();
             if (Array.isArray(res)) {
-                const filteredData = res.map(thread => ({ threadId: thread.threadId, title: thread.title }));
+                const filteredData = res.map(thread => ({
+                    threadId: thread.threadId,
+                    title: thread.title
+                }));
                 setAllThreads(filteredData);
             }
-        } catch(err) {
-            console.log(err);
+        } catch (err) {
+            console.error(err);
         }
     };
 
@@ -35,40 +39,42 @@ function Sidebar() {
         setNewChat(true);
         setPrompt("");
         setReply(null);
-        setCurrThreadId(uuidv1());
+        setCurrThreadId(uuidv4()); // v4 UUID matches backend zod schema
         setPrevChats([]);
     };
 
     const changeThread = async (newThreadId) => {
-       setCurrThreadId(newThreadId);
-
-       try {
-            const response = await fetch(`http://localhost:5000/api/thread/${newThreadId}`, { headers: getHeaders() });
+        setCurrThreadId(newThreadId);
+        try {
+            const response = await apiFetch(
+                `/api/thread/${newThreadId}`,
+                {},
+                { token, guestId, onUnauthorized: logout }
+            );
             const res = await response.json();
             if (Array.isArray(res)) {
                 setPrevChats(res);
                 setNewChat(false);
                 setReply(null);
             }
-       } catch (err) {
-            console.log(err);
-       }
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     const deleteThread = async (threadId) => {
         try {
-            await fetch(`http://localhost:5000/api/thread/${threadId}`, {
-                method: "DELETE",
-                headers: getHeaders()
-            });
-
+            await apiFetch(
+                `/api/thread/${threadId}`,
+                { method: "DELETE" },
+                { token, guestId, onUnauthorized: logout }
+            );
             setAllThreads(prev => prev.filter(thread => thread.threadId !== threadId));
-
             if (threadId === currThreadId) {
                 createNewChat();
             }
-        } catch(err) {
-            console.log(err);
+        } catch (err) {
+            console.error(err);
         }
     };
 

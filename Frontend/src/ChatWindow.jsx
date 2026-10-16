@@ -3,11 +3,12 @@ import Chat from "./Chat";
 import { MyContext } from "./MyContext";
 import { useContext, useState, useRef, useEffect } from "react";
 import { ScaleLoader } from "react-spinners";
+import apiFetch from "./api.js";
 
 function ChatWindow() {
     const {
         prompt, setPrompt, setReply, currThreadId, setPrevChats, setNewChat,
-        token, user, logout, setAuthModalOpen, setSettingsModalOpen, setUpgradeModalOpen
+        token, guestId, user, logout, setAuthModalOpen, setSettingsModalOpen, setUpgradeModalOpen
     } = useContext(MyContext);
 
     const [loading, setLoading] = useState(false);
@@ -40,9 +41,7 @@ function ChatWindow() {
         recognition.interimResults = false;
         recognition.lang = "en-US";
 
-        recognition.onstart = () => {
-            setIsListening(true);
-        };
+        recognition.onstart = () => setIsListening(true);
 
         recognition.onresult = (event) => {
             const transcript = event.results[0][0].transcript;
@@ -55,9 +54,7 @@ function ChatWindow() {
             setIsListening(false);
         };
 
-        recognition.onend = () => {
-            setIsListening(false);
-        };
+        recognition.onend = () => setIsListening(false);
 
         recognition.start();
     };
@@ -71,28 +68,24 @@ function ChatWindow() {
         setNewChat(false);
         setLoading(true);
 
-        const headers = { "Content-Type": "application/json" };
-        if (token) {
-            headers["Authorization"] = `Bearer ${token}`;
-        }
-
-        const options = {
-            method: "POST",
-            headers,
-            body: JSON.stringify({
-                message: userMessage,
-                threadId: currThreadId,
-            }),
-        };
         try {
-            const response = await fetch("http://localhost:5000/api/chat", options);
+            // apiFetch attaches the correct auth header and handles 401 logout
+            const response = await apiFetch(
+                "/api/chat",
+                {
+                    method: "POST",
+                    body: JSON.stringify({ message: userMessage, threadId: currThreadId })
+                },
+                { token, guestId, onUnauthorized: logout }
+            );
+
             const res = await response.json();
             const assistantContent = res.reply || "Error getting response.";
             setReply(assistantContent);
             setPrevChats(prev => [...prev, { role: "assistant", content: assistantContent }]);
 
-        } catch(err) {
-            console.log(err);
+        } catch (err) {
+            console.error(err);
             setPrevChats(prev => [...prev, { role: "assistant", content: "Failed to fetch response. Please try again." }]);
         } finally {
             setLoading(false);
