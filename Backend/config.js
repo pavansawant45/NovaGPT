@@ -18,7 +18,7 @@ const config = {
     groqApiKey: process.env.GROQ_API_KEY,
     clientOrigin: process.env.CLIENT_ORIGIN,
     // Optional: Groq model override, falls back to a known-good default
-    groqModel: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+    groqModel: process.env.GROQ_MODEL || "openai/gpt-oss-120b",
 };
 
 export default config;

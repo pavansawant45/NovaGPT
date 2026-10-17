@@ -158,6 +158,9 @@ function ChatWindow() {
                 <div className="inputBox">
                     <textarea
                         placeholder="Ask anything..."
+                        id="chat-input"
+                        name="message"
+                        aria-label="Message NovaGPT"
                         value={prompt}
                         disabled={loading}
                         rows={1}

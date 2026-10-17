@@ -10,7 +10,13 @@
 // Alternative rejected: a React hook — this helper is also called outside
 //   components (e.g. from event handlers), so a plain function is simpler.
 
-const BASE_URL = import.meta.env.VITE_API_URL;
+// In development, fall back to the local backend when VITE_API_URL is not set.
+// In a production build a missing VITE_API_URL becomes "" (same-origin), so the
+// misconfiguration shows up as an obvious 404 instead of requests to "undefined/api/...".
+const BASE_URL = (
+    import.meta.env.VITE_API_URL ||
+    (import.meta.env.DEV ? "http://localhost:5000" : "")
+).replace(/\/$/, "");
 
 /**
  * @param {string} path - e.g. "/api/chat"

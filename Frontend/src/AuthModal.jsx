@@ -1,5 +1,6 @@
 import { useState, useContext } from "react";
 import { MyContext } from "./MyContext";
+import apiFetch from "./api.js";
 
 function AuthModal({ isOpen, onClose }) {
     const { login } = useContext(MyContext);
@@ -18,15 +19,14 @@ function AuthModal({ isOpen, onClose }) {
         setError("");
         setLoading(true);
 
-        const endpoint = isLogin
-            ? "http://localhost:5000/api/auth/login"
-            : "http://localhost:5000/api/auth/register";
+        const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
         const body = isLogin ? { email, password } : { username, email, password };
 
         try {
-            const res = await fetch(endpoint, {
+            // No token / onUnauthorized here: a 401 from /login means "wrong password",
+            // not "session expired", so it must not trigger a logout.
+            const res = await apiFetch(endpoint, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body),
             });
             const data = await res.json();
@@ -36,7 +36,7 @@ function AuthModal({ isOpen, onClose }) {
                 login(data.token, data.user);
                 onClose();
             }
-        } catch (err) {
+        } catch {
             setError("Network error. Please try again.");
         } finally {
             setLoading(false);
@@ -126,6 +126,8 @@ function AuthModal({ isOpen, onClose }) {
                                     <i className="fa-solid fa-user authInputIcon"></i>
                                     <input
                                         type="text"
+                                        id="auth-username"
+                                        name="username"
                                         required
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
@@ -143,6 +145,8 @@ function AuthModal({ isOpen, onClose }) {
                                 <i className="fa-solid fa-envelope authInputIcon"></i>
                                 <input
                                     type="email"
+                                    id="auth-email"
+                                    name="email"
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
@@ -159,6 +163,8 @@ function AuthModal({ isOpen, onClose }) {
                                 <i className="fa-solid fa-lock authInputIcon"></i>
                                 <input
                                     type={showPass ? "text" : "password"}
+                                    id="auth-password"
+                                    name="password"
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}

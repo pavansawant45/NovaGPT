@@ -53,6 +53,8 @@ function SettingsModal({ isOpen, onClose }) {
                             <label className="toggleSwitch" id="auto-speak-toggle">
                                 <input
                                     type="checkbox"
+                                    id="auto-speak"
+                                    name="autoSpeak"
                                     checked={autoSpeak}
                                     onChange={(e) => setAutoSpeak(e.target.checked)}
                                 />

@@ -14,34 +14,51 @@ const uuidSchema = z.string().uuid("threadId must be a valid UUID");
 const chatSchema = z.object({
     threadId: uuidSchema,
     message: z.string()
-               .min(1, "Message cannot be empty")
-               .max(4000, "Message cannot exceed 4000 characters")
-               .trim()
+        .trim()   // must come BEFORE min/max, otherwise "   " passes min(1) and is saved as ""
+        .min(1, "Message cannot be empty")
+        .max(4000, "Message cannot exceed 4000 characters")
 });
 
-// ── GET /thread – list all threads for the current owner ─────────────────────
-// Supports cursor-based pagination: pass ?limit=20&cursor=<updatedAt ISO string>
-// Returns only { threadId, title, updatedAt } to keep the payload small.
+const PAGE_SIZE_DEFAULT = 20;
+const PAGE_SIZE_MAX = 100;
+const OBJECT_ID_RE = /^[0-9a-f]{24}$/i;
+
+// Cursor format: "<updatedAt ISO string>|<thread _id>".
+// updatedAt alone is not unique, so _id is the tiebreaker; without it a page boundary
+// between two threads with the same updatedAt would silently skip one of them.
+const parseCursor = (raw) => {
+    if (typeof raw !== "string") return null;   // ?cursor=a&cursor=b arrives as an array
+    const [iso, id] = raw.split("|");
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime()) || !OBJECT_ID_RE.test(id || "")) return null;
+    return { date, id };
+};
+
+// ── GET /thread – list the caller's threads (newest first, paginated) ────────
+// ?limit=20&cursor=<updatedAt>|<_id>  (both values come from the LAST item of the previous page)
 
 router.get("/thread", async (req, res, next) => {
     try {
-        const owner = ownerFilter(req); // throws 403 if no identifier
+        const owner = ownerFilter(req); // throws 403/400 if identity is missing/invalid
 
-        const limit = Math.min(parseInt(req.query.limit) || 20, 100);
-        const cursor = req.query.cursor; // ISO date string of the last item seen
+        const requested = Number.parseInt(req.query.limit, 10);
+        const limit = Math.min(Math.max(requested || PAGE_SIZE_DEFAULT, 1), PAGE_SIZE_MAX);
 
         const query = { ...owner };
-        // Cursor pagination: fetch threads older than the cursor
-        if (cursor) {
-            const cursorDate = new Date(cursor);
-            if (!isNaN(cursorDate)) {
-                query.updatedAt = { $lt: cursorDate };
+        if (req.query.cursor !== undefined) {
+            const cursor = parseCursor(req.query.cursor);
+            if (!cursor) {
+                return res.status(400).json({ error: "Invalid cursor" });
             }
+            query.$or = [
+                { updatedAt: { $lt: cursor.date } },
+                { updatedAt: cursor.date, _id: { $lt: cursor.id } }
+            ];
         }
 
         const threads = await Thread
             .find(query)
-            .sort({ updatedAt: -1 })
+            .sort({ updatedAt: -1, _id: -1 })
             .limit(limit)
             .select("threadId title updatedAt");
 
@@ -112,6 +129,12 @@ router.post("/chat", async (req, res, next) => {
         let thread = await Thread.findOne({ threadId, ...owner });
 
         if (!thread) {
+            // threadId is globally unique. If it already exists under ANOTHER owner, stop here:
+            // creating it would fail on the unique index only after an LLM call was already paid for,
+            // and the 500-vs-200 difference would reveal that someone else's thread exists.
+            if (await Thread.exists({ threadId })) {
+                return res.status(404).json({ error: "Thread not found" });
+            }
             // Create a new thread scoped to this owner only
             thread = new Thread({
                 threadId,
@@ -130,6 +153,10 @@ router.post("/chat", async (req, res, next) => {
 
         res.json({ reply: assistantReply });
     } catch (error) {
+        // Two simultaneous first messages with the same new threadId: the loser hits the unique index.
+        if (error?.code === 11000) {
+            return res.status(409).json({ error: "Thread already exists" });
+        }
         next(error);
     }
 });

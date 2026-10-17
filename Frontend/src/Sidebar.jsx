@@ -1,8 +1,10 @@
 import "./Sidebar.css";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { MyContext } from "./MyContext";
 import { v4 as uuidv4 } from "uuid";
 import apiFetch from "./api.js";
+// Must match the backend default page size (GET /api/thread, limit=20).
+const PAGE_SIZE = 20;
 
 function Sidebar() {
     const {
@@ -11,29 +13,75 @@ function Sidebar() {
         logout, setAuthModalOpen
     } = useContext(MyContext);
 
-    const getAllThreads = async () => {
+    // Pagination state. The backend cursor is "<updatedAt>|<_id>" of the LAST thread
+    // received. It lives in a ref because it never needs to trigger a re-render.
+    const cursorRef = useRef(null);
+    const [hasMore, setHasMore] = useState(false);
+    const [loadingMore, setLoadingMore] = useState(false);
+
+    const toListItem = (thread) => ({ threadId: thread.threadId, title: thread.title });
+
+    // Pure helper (no state updates): builds the cursor for the NEXT page from the last item.
+    const cursorFrom = (page) => {
+        const last = page[page.length - 1];
+        return last ? `${last.updatedAt}|${last._id}` : null;
+    };
+
+    // Loads the next (older) page and appends it.
+    const loadMore = async () => {
+        if (!cursorRef.current || loadingMore) return;
+        setLoadingMore(true);
         try {
             const response = await apiFetch(
-                "/api/thread",
+                `/api/thread?limit=${PAGE_SIZE}&cursor=${encodeURIComponent(cursorRef.current)}`,
                 {},
                 { token, guestId, onUnauthorized: logout }
             );
             const res = await response.json();
             if (Array.isArray(res)) {
-                const filteredData = res.map(thread => ({
-                    threadId: thread.threadId,
-                    title: thread.title
-                }));
-                setAllThreads(filteredData);
+                // De-duplicate: a thread you just chatted in moves to the top and could
+                // otherwise show up again in an older page.
+                setAllThreads(prev => {
+                    const seen = new Set(prev.map(t => t.threadId));
+                    return [...prev, ...res.filter(t => !seen.has(t.threadId)).map(toListItem)];
+                });
+                cursorRef.current = cursorFrom(res);
+                setHasMore(res.length === PAGE_SIZE);
             }
         } catch (err) {
             console.error(err);
+        } finally {
+            setLoadingMore(false);
         }
     };
 
+    // Loads the first (newest) page and resets the list whenever the open chat or the
+    // login state changes. `cancelled` ignores a response that arrives after a newer
+    // request has started (for example when logging in or out quickly).
     useEffect(() => {
-        getAllThreads();
-    }, [currThreadId, token]);
+        let cancelled = false;
+        const loadFirstPage = async () => {
+            try {
+                const response = await apiFetch(
+                    `/api/thread?limit=${PAGE_SIZE}`,
+                    {},
+                    { token, guestId, onUnauthorized: logout }
+                );
+                const res = await response.json();
+                if (!cancelled && Array.isArray(res)) {
+                    setAllThreads(res.map(toListItem));
+                    cursorRef.current = cursorFrom(res);
+                    setHasMore(res.length === PAGE_SIZE);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        loadFirstPage();
+        return () => { cancelled = true; };
+        // `logout` is recreated on every render, so it is deliberately left out of the dependencies.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currThreadId, token, guestId]);
 
     const createNewChat = () => {
         setNewChat(true);
@@ -103,22 +151,34 @@ function Sidebar() {
             <ul className="history">
                 {
                     allThreads?.map((thread, idx) => (
-                        <li key={idx}
-                           onClick={() => changeThread(thread.threadId)}
-                           className={thread.threadId === currThreadId ? "highlighted" : ""}
-                           id={`thread-${idx}`}
+                        <li key={thread.threadId}
+                            onClick={() => changeThread(thread.threadId)}
+                            className={thread.threadId === currThreadId ? "highlighted" : ""}
+                            id={`thread-${idx}`}
                         >
                             <i className="fa-regular fa-message threadIcon"></i>
                             <span className="threadTitle">{thread.title}</span>
                             <i className="fa-solid fa-trash trashIcon"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                deleteThread(thread.threadId);
-                            }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    deleteThread(thread.threadId);
+                                }}
                             ></i>
                         </li>
                     ))
                 }
+                {hasMore && (
+                    <li className="loadMoreItem">
+                        <button
+                            className="loadMoreBtn"
+                            onClick={loadMore}
+                            disabled={loadingMore}
+                            id="load-more-threads"
+                        >
+                            {loadingMore ? "Loading…" : "Load more"}
+                        </button>
+                    </li>
+                )}
             </ul>
 
             {/* Bottom: User info */}

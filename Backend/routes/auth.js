@@ -10,18 +10,26 @@ const router = express.Router();
 
 // ── Zod schemas ──────────────────────────────────────────────────────────────
 
+// .trim() comes FIRST so the length checks apply to the trimmed value.
+// Passwords are capped at 72 characters because bcrypt ignores everything after 72 bytes.
 const registerSchema = z.object({
-    username: z.string().min(2, "Username must be at least 2 characters")
-                        .max(40, "Username must be at most 40 characters")
-                        .trim(),
-    email: z.string().email("Invalid email format").toLowerCase().trim(),
+    username: z.string().trim()
+        .min(2, "Username must be at least 2 characters")
+        .max(40, "Username must be at most 40 characters"),
+    email: z.string().trim().toLowerCase().email("Invalid email format").max(254),
     password: z.string().min(8, "Password must be at least 8 characters")
+        .max(72, "Password must be at most 72 characters")
 });
 
 const loginSchema = z.object({
-    email: z.string().email("Invalid email format").toLowerCase().trim(),
+    email: z.string().trim().toLowerCase().email("Invalid email format").max(254),
     password: z.string().min(1, "Password is required")
+        .max(72, "Password must be at most 72 characters")
 });
+
+// Hash of a throwaway password, computed once at startup (same cost factor as real hashes).
+// Login compares against it when the email is unknown so both cases take equally long.
+const DUMMY_HASH = bcrypt.hashSync("timing-equalizer-not-a-real-password", 10);
 
 // ── Register ─────────────────────────────────────────────────────────────────
 
@@ -57,6 +65,10 @@ router.post("/register", async (req, res, next) => {
             user: { id: user._id, username: user.username, email: user.email }
         });
     } catch (error) {
+        // Two simultaneous sign-ups with the same email: the loser hits the unique index.
+        if (error?.code === 11000) {
+            return res.status(400).json({ error: "User with this email already exists" });
+        }
         next(error); // passes to central error handler
     }
 });
@@ -73,11 +85,14 @@ router.post("/login", async (req, res, next) => {
 
     try {
         const user = await User.findOne({ email });
-        const isMatch = user && await bcrypt.compare(password, user.password);
+        // ALWAYS run bcrypt.compare, even when the user does not exist (against DUMMY_HASH).
+        // `user && await bcrypt.compare(...)` skips the ~100 ms hash check for unknown emails,
+        // so response time alone would reveal which emails are registered.
+        const hashToCheck = user ? user.password : DUMMY_HASH;
+        const passwordOk = await bcrypt.compare(password, hashToCheck);
 
-        // Generic message regardless of whether user exists or password is wrong.
-        // This prevents user enumeration attacks.
-        if (!isMatch) {
+        // Same status and message whether the email or the password was wrong.
+        if (!user || !passwordOk) {
             return res.status(401).json({ error: "Invalid email or password" });
         }
 
